@@ -26,6 +26,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// connect DB before every request (uses cached connection)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Database connection failed" });
+  }
+});
+
 app.use("/api/auth", authRoutes);
 
 const port = process.env.PORT || 4000;
